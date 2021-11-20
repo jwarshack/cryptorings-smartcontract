@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract TestRings is ERC721Enumerable, Ownable {
+contract CryptoRings is ERC721Enumerable, Ownable {
 
     using Strings for uint256;
 
