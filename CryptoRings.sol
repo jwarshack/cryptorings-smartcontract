@@ -16,7 +16,7 @@ contract CryptoRings is ERC721Enumerable, Ownable {
     constructor() ERC721("CryptoRings", "CRINGS")  {
         _baseTokenURI = "https://cr-test.vercel.app/api/";
         for (uint256 i = 0; i < 25; i++) {
-            _safeMint(0xf12E52DAFd494344c1A4c3911F837482958d5D3E, i);
+            _safeMint(msg.sender, i);
         }
 
     }
