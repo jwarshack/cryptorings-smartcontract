@@ -6,19 +6,15 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contr
 
 contract CryptoRings is ERC721Enumerable, Ownable {
 
-    using Strings for uint256;
-
     string _baseTokenURI;
     uint256 private _price = 0.10 ether;
     bool public _paused = true;
 
-
     constructor() ERC721("CryptoRings", "CRINGS")  {
-        _baseTokenURI = "https://cr-test.vercel.app/api/";
+        _baseTokenURI = "https://www.thecryptorings.com/api/";
         for (uint256 i = 0; i < 25; i++) {
             _safeMint(msg.sender, i);
         }
-
     }
 
     function mint(uint256 num) public payable {
@@ -28,8 +24,8 @@ contract CryptoRings is ERC721Enumerable, Ownable {
         require( supply + num < 6001, "Exceeds maximum ring supply");
         require( msg.value >= _price * num, "Ether sent is not correct" );
 
-        for(uint256 i; i < num; i++){
-            _safeMint(msg.sender, supply + i );
+        for(uint256 i; i < num; i++) {
+            _safeMint(msg.sender, supply + i);
         }
     }
 
@@ -45,16 +41,21 @@ contract CryptoRings is ERC721Enumerable, Ownable {
         _baseTokenURI = baseURI;
     }
 
-    function getPrice() public view returns (uint256){
+    function getPrice() public view returns (uint256) {
         return _price;
     }
-
 
     function pause(bool val) public onlyOwner {
         _paused = val;
     }
 
-    function withdraw() public payable onlyOwner {
+    function withdraw(uint256 amount) public payable onlyOwner {
+        uint256 bal = address(this).balance;
+        require(amount <= bal, "Withdrawal amount exceeds balance");
+        require(payable(msg.sender).send(amount));
+    }
+
+    function withdrawAll() public payable onlyOwner {
         uint256 bal = address(this).balance;
         require(payable(msg.sender).send(bal));
     }
