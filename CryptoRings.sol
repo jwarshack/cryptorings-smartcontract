@@ -2,35 +2,37 @@
 pragma solidity ^0.8.0;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contracts/access/Ownable.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.2.0/contracts/token/ERC721//ERC721.sol";
 
-contract CryptoRings is ERC721Enumerable, Ownable {
+contract CryptoRings is ERC721, Ownable {
 
+    uint256 public tokenCount;
+    bool public paused = true;
     string _baseTokenURI;
-    uint256 private _price = 0.10 ether;
-    bool public _paused = true;
+    uint256 private price = 0.10 ether;
 
     constructor() ERC721("CryptoRings", "CRINGS")  {
         _baseTokenURI = "https://www.thecryptorings.com/api/";
         for (uint256 i = 0; i < 25; i++) {
             _safeMint(msg.sender, i);
         }
+        tokenCount += 25;
     }
 
     function mint(uint256 num) public payable {
-        uint256 supply = totalSupply();
-        require( !_paused, "Sale is paused");
-        require( num < 11, "You can only mint 10 rings");
-        require( supply + num < 6001, "Exceeds maximum ring supply");
-        require( msg.value >= _price * num, "Ether sent is not correct" );
+        require(!paused, "Minting has not begun");
+        require(num < 11, "You can only mint 10 rings");
+        require(tokenCount + num < 6001, "Exceeds maximum ring supply");
+        require(msg.value >= price * num, "Ether sent is not correct" );
 
         for(uint256 i; i < num; i++) {
-            _safeMint(msg.sender, supply + i);
+            _safeMint(msg.sender, tokenCount + i);
         }
+        tokenCount += num;
     }
 
     function setPrice(uint256 _newPrice) public onlyOwner() {
-        _price = _newPrice;
+        price = _newPrice;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -42,11 +44,11 @@ contract CryptoRings is ERC721Enumerable, Ownable {
     }
 
     function getPrice() public view returns (uint256) {
-        return _price;
+        return price;
     }
 
     function pause(bool val) public onlyOwner {
-        _paused = val;
+        paused = val;
     }
 
     function withdraw(uint256 amount) public payable onlyOwner {
